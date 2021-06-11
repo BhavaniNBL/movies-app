@@ -1,25 +1,42 @@
-import logo from './logo.svg';
+import React from 'react';
+import Movie from './components/Movies';
+import {Searchbar} from './components/Searchbar';
+// import Moviesjson from '../public/json/movies.json';
+import axios from 'axios';
 import './App.css';
 
-function App() {
+class App extends React.Component{
+  constructor() {
+    super();
+    this.state = {
+      movies: [],
+      searchField: ''
+    }
+  }
+  componentDidMount() {
+    axios.get('./json/movies.json')
+      .then(response => response.data)
+      .then(resp => this.setState({movies: resp}));
+    
+  }
+  handleChange = e => {
+    this.setState({ searchField : e.target.value })
+  }
+  render() {
+    const { movies, searchField } = this.state;
+    const filteredMovies = movies.filter(movie => 
+      movie.title.toLowerCase().includes(searchField.toLowerCase()))
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    {/* {movies.map((movie)=> <Movie key={movie.id} {...movie}/>)} */}
+    {/* {movies.map((movie)=> console.log(movies))} */}
+    <h1>Movies</h1>
+    <Searchbar placeholder='search monster movies' 
+          handleChange={this.handleChange}/>
+    <Movie movies={filteredMovies} />
     </div>
   );
+  }
 }
 
 export default App;
